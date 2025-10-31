@@ -1,5 +1,5 @@
 /// Application configuration
-class AppConfig {
+class Config {
   // Backend API URL
   // Change this to your deployed backend URL for production
   static const String apiBaseUrl = String.fromEnvironment(

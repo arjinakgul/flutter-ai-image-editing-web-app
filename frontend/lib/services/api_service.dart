@@ -3,14 +3,15 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../models/job.dart';
+import '../config.dart';
 
 /// API Service for communicating with the backend
 class ApiService {
-  // Backend API base URL - Change this to your deployed backend URL
+  // Backend API base URL
   final String baseUrl;
 
   ApiService({
-    this.baseUrl = 'https://flutter-ai-image-editing-web-app.vercel.app',
+    this.baseUrl = Config.apiBaseUrl,
   });
 
   /// Create a new image editing job
@@ -151,8 +152,8 @@ class ApiService {
   /// Calls onUpdate callback with the latest job status
   Future<Job> pollJobStatus({
     required int jobId,
-    Duration pollInterval = const Duration(seconds: 3),
-    Duration timeout = const Duration(minutes: 5),
+    Duration pollInterval = Config.pollInterval,
+    Duration timeout = Config.pollTimeout,
     void Function(Job)? onUpdate,
   }) async {
     final startTime = DateTime.now();
