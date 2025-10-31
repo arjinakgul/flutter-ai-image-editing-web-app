@@ -41,6 +41,8 @@ class _HomePageState extends State<HomePage> {
     if (_currentJob != null) {
       _originalImageUrl = _currentJob!.originalImageUrl;
       _editedImageUrl = _currentJob!.editedImageUrl;
+      _selectedImageIndex = 1;
+      _statusMessage = 'Image loaded successfully!';
     }
   }
 
@@ -60,9 +62,9 @@ class _HomePageState extends State<HomePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error picking image from file system')),
+        );
       }
     }
   }
@@ -119,7 +121,7 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error downloading image: $e'),
+            content: Text('Error downloading image to downloads folder.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -132,7 +134,7 @@ class _HomePageState extends State<HomePage> {
     if (_promptController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter a prompt'),
+          content: Text('Please enter a prompt to generate an image'),
           backgroundColor: Colors.red,
         ),
       );
@@ -140,6 +142,12 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (_imageBytes == null && _currentJob == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please upload an image or select a version'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -195,6 +203,7 @@ class _HomePageState extends State<HomePage> {
 
           if (completedJob.isCompleted && completedJob.editedImageUrl != null) {
             _editedImageUrl = completedJob.editedImageUrl;
+            _selectedImageIndex = 1;
             _statusMessage =
                 'Image ready! Choose a version to continue or upload a new image.';
             ScaffoldMessenger.of(context).showSnackBar(
@@ -205,11 +214,11 @@ class _HomePageState extends State<HomePage> {
             );
           } else if (completedJob.isFailed) {
             _statusMessage =
-                'Failed: ${completedJob.errorMessage ?? "Unknown error"}';
+                'Something went wrong. Please try again with a different image or prompt.';
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Error: ${completedJob.errorMessage ?? "Unknown error"}',
+                  'Sorry, we couldn\'t process your image. Please try again.',
                 ),
                 backgroundColor: Colors.red,
               ),
@@ -225,7 +234,7 @@ class _HomePageState extends State<HomePage> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Unexpected error: $e'),
+            content: Text('Unexpected error occurred. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -335,15 +344,17 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('AI Image Editor'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
+          TextButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HistoryPage()),
               );
             },
-            tooltip: 'View History',
+            child: const Text(
+              'Gallery',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            ),
           ),
         ],
       ),
@@ -358,13 +369,25 @@ class _HomePageState extends State<HomePage> {
               // Header
               const SizedBox(height: 24),
               Text(
-                'Upload an image and describe how you want to edit it',
+                _selectedImageIndex == -1
+                    ? 'Upload a new image'
+                    : 'Choose a version',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'and describe how you want to edit it',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
 
               // Main content area
               Expanded(
@@ -386,7 +409,6 @@ class _HomePageState extends State<HomePage> {
                             labelText: 'Explain the new version of the image',
                             hintText: 'e.g., Add a sunset in the background',
                             border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.edit),
                           ),
                           maxLines: 3,
                           enabled: !_isLoading,
@@ -434,10 +456,7 @@ class _HomePageState extends State<HomePage> {
                               child: SizedBox(
                                 height: 50,
                                 child: ElevatedButton.icon(
-                                  onPressed:
-                                      (_imageBytes != null && !_isLoading ||
-                                          (_currentJob != null &&
-                                              _selectedImageIndex != -1))
+                                  onPressed: _imageBytes != null && !_isLoading
                                       ? _generateImage
                                       : null,
                                   icon: _isLoading

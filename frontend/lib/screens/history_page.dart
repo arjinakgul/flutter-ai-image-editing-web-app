@@ -317,7 +317,7 @@ class _HistoryPageState extends State<HistoryPage> {
         elevation: 0,
         backgroundColor: Colors.white,
         title: const Text(
-          'Old Works',
+          'Gallery',
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(color: Colors.black87),
@@ -489,6 +489,9 @@ class _HistoryPageState extends State<HistoryPage> {
                             },
                           ),
                         ),
+                      if (job.originalImageUrl != null &&
+                          job.editedImageUrl != null)
+                        const SizedBox(width: 4),
                       if (job.editedImageUrl != null)
                         Expanded(
                           child: Image.network(
@@ -526,7 +529,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 4,
                           ),
                         ],
@@ -555,13 +558,13 @@ class _HistoryPageState extends State<HistoryPage> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius: 8,
                             ),
                           ],
                         ),
                         child: const Icon(
-                          Icons.compare_arrows,
+                          Icons.double_arrow_rounded,
                           color: Colors.blue,
                           size: 20,
                         ),
