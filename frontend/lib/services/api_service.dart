@@ -9,7 +9,9 @@ class ApiService {
   // Backend API base URL - Change this to your deployed backend URL
   final String baseUrl;
 
-  ApiService({this.baseUrl = 'http://localhost:8000'});
+  ApiService({
+    this.baseUrl = 'https://flutter-ai-image-editing-web-app.vercel.app',
+  });
 
   /// Create a new image editing job
   ///
