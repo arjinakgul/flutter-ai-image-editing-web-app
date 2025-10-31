@@ -37,7 +37,7 @@ class _HistoryPageState extends State<HistoryPage> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Failed to load history: $e';
+        _errorMessage = 'Failed to load history';
       });
     }
   }
